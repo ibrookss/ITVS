@@ -1,5 +1,7 @@
+const vkController = require('./vkController.js')
 module.exports = {
   start: (req, res) => {
-    res.send(200);
+    vkController.getAuthCode(req, res);
+    //vkController.getAcessToken(req, res, next);
   }
 }

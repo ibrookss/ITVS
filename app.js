@@ -2,9 +2,16 @@ const express = require('express');
 const app = express();
 
 const exhb = require('express-handlebars');
+const session = require('express-session')
+
 
 const router = require('./router.js');
 const config = require('./config.js');
+const bodyParser = require('body-parser');
+
+app.use(session({ secret: 'GkGjsYUdfLdsB', cookie: { maxAge: 600000 }, resave: true, saveUninitialized: true }));
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 
 app.use('/public',express.static('./public'));
 app.engine('handlebars', exhb({defaultLayout: 'main'}));
