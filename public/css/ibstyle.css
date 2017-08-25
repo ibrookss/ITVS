@@ -52,5 +52,10 @@ input[type=submit]:hover, input[type=button]:hover{
 }
 .fileBlock{
   padding: 15px;
-
+}
+.progressBar{
+  width:0;
+  height:5px;
+  background: red;
+  transition: 0.3s;
 }
