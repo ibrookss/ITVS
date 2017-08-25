@@ -1,8 +1,9 @@
 const vkController = require('./vkController.js')
 module.exports = {
-  signin: (req, res) => {
-    vkController.getAuthCode(req, res);
-    //vkController.getAcessToken(req, res, next);
+  signin: async (req, res) => {
+    await vkController.getAuthCode(req, res);
+    await vkController.getAcessToken(req, res);
+    await vkController.getUploadServerUrl(req, res);
   }
 }
 
