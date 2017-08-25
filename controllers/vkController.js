@@ -1,9 +1,10 @@
 const request = require('request');
 
 module.exports = {
-  client_id: 6155225,
-  secret_key: 'V9qA3NxPdKVyyGitQ6W5',
-  redirect_uri: 'http://localhost:8080/',
+  client_id: 6161379,
+  secret_key: 'gXN7nljHZjWjK37erkL0',
+  redirect_uri: 'http://localhost:8080/signin',
+  index_uri: 'http://localhost:8080/',
   display: 'popup',
   scope: 'offline,docs',
   response_type: 'code',
@@ -25,8 +26,7 @@ module.exports = {
       responseBody = JSON.parse(body);
       req.session.access_token = responseBody.access_token;
       req.session.user_id = responseBody.user_id;
-      console.log(req.session)
-      res.render('index', {code: req.session.code, access_token: req.session.access_token, user_id: req.session.user_id});
+      res.redirect(this.index_uri);
     });
   }
 }
