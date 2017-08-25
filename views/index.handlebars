@@ -1,19 +1,63 @@
+<a href="/signin"><input type="button" value="Авторизироваться"></a> <br>
 Код: <b>{{code}}</b> <br>
 Access Token: <b>{{access_token}}</b> <br>
 User id: <b>{{user_id}}</b> <br>
-<div class="fileloader" id="fileloader">
-  Переместите сюда файлы
-</div>
 <form method="post" action="/upload" enctype="multipart/form-data">
   <input type="file" name="document" />
   <input type="submit" value="Поехали" />
 </form>
+<div class="fileloader" id="fileloader">
+  Переместите сюда файлы
+</div>
+<table class="fileStack" id="fileStack">
+
+</table>
 <script>
 
   fileloader.innerHTML += '- Блок инициализирован';
-  function fileloader(block, url) {
+  function FileConstructor(content, id) {
+    this.id = id;
+    this.content = content;
+    this.addBlock = function (id) {
+      fl.stackBlock.innerHTML += `
+        <tr>
+          <td><a id="file-${id}">${this.content.name}</a></td>
+          <td><button onclick="fl.stack[${this.id}].upload('/upload', 'post');">Загрузить</button></td>
+        </tr>`;
+    }
+    this.upload = (url, method) => {
+      console.log('Завгшрузка')
+      let file = this.content;
+      console.log(file)
+      let xhr = new XMLHttpRequest();
+      let form = new FormData();
+      form.append("document", file);
+      xhr.upload.addEventListener('progress', this.uploadProgress, false);
+      xhr.onreadystatechange = this.stateChange;
+      xhr.open('POST', url);
+      xhr.setRequestHeader('X-FILE-NAME', file.name);
+      xhr.send(form);
+    }
+    this.stateChange = (event) => {
+      if (event.target.readyState == 4) {
+        if (event.target.status == 200) {
+            document.querySelector(`#file-${this.id}`).innerHTML = 'Загрузка успешно завершена!';
+        } else {
+            document.querySelector(`#file-${this.id}`).innerHTML = 'Нихуя';
+        }
+      }
+    }
+    this.uploadProgress = (event) => {
+      let percent = parseInt(event.loaded / event.total * 100);
+        document.querySelector(`#file-${this.id}`).innerHTML = 'Загрузка: ' + percent + '%';
+    }
+  }
+  function fileloader(block, url, stackBlock) {
     this.block = document.getElementById(block);
+    this.stackBlock = document.getElementById(stackBlock)
     this.url = url;
+    this.stack = [];
+    this.lastId = 0;
     this.init = () => {
       //console.log(this);
       console.log('Инит')
@@ -44,12 +88,23 @@ User id: <b>{{user_id}}</b> <br>
     this.dropZoneDrop = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      this.file = e.dataTransfer.files[0];
+      this.files = e.dataTransfer.files;
+      for (let i = 0; i < this.files.length; i++) {
+        let file = this.files[i];
+        console.log(file);
+        this.addToStack(i)
+      }
+      console.log(e.dataTransfer.files);
       console.log('Дроп');
       return false;
     }
+    this.addToStack = (fileId) => {
+      let fileCell = new FileConstructor(this.files[fileId], this.lastId);
+      this.stack[this.lastId] = fileCell;
+      fileCell.addBlock(this.lastId);
+      this.lastId++;
+    }
   }
-  let fl = new fileloader('fileloader', '/');
+  let fl = new fileloader('fileloader', '/upload', 'fileStack');
   fl.init();
 </script>
-<a href="/signin"><input type="button" value="Авторизироваться"></a>
