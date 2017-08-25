@@ -8,10 +8,12 @@ const session = require('express-session')
 const router = require('./router.js');
 const config = require('./config.js');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
 
 app.use(session({ secret: 'GkGjsYUdfLdsB', cookie: { maxAge: 600000 }, resave: true, saveUninitialized: true }));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(fileUpload());
 
 app.use('/public',express.static('./public'));
 app.engine('handlebars', exhb({defaultLayout: 'main'}));
