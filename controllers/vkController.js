@@ -8,6 +8,7 @@ module.exports = {
   display: 'popup',
   scope: 'offline,docs',
   response_type: 'code',
+  //Получает code и добавляет в сессию
   getAuthCode(req, res){
     //Если нет кода, то получаем его
     return new Promise((resolve, reject) => {
@@ -26,6 +27,7 @@ module.exports = {
       }
     });
   },
+  //Получает access_token, user_id и добавляет в сессию
   getAcessToken(req, res) {
     return new Promise((resolve, reject) => {
       try {
@@ -44,6 +46,7 @@ module.exports = {
       }
     });
   },
+  //Возвращает ссылку для загрузочного сервера
   getUploadServerUrl(req, res) {
     return new Promise((resolve, reject) => {
       try {
@@ -51,12 +54,22 @@ module.exports = {
         let responseBody;
         request(url, (error, response, body) => {
           responseBody = JSON.parse(body);
-          console.log(responseBody);
-          resolve();
+          resolve(responseBody.response.upload_url);
         });
       } catch (err) {
         reject(err)
       }
     });
+  },
+  saveDoc(req, res) {
+    return new Promise ((resolve, reject) => {
+
+    })
+  },
+  uploadDoc(req, res) {
+    return new Promise ((resolve, reject) => {
+      console.log(req.files)
+      res.sendStatus(200);
+    })
   }
 }
