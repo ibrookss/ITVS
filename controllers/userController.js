@@ -3,16 +3,13 @@ module.exports = {
   signin: async (req, res) => {
     await vkController.getAuthCode(req, res);
     await vkController.getAcessToken(req, res);
-    await vkController.getUploadServerUrl(req, res);
   },
   uploadDocument: async (req, res) => {
-    let url = await vkController.getUploadServerUrl(req, res);
-    console.log(url)
-    await vkController.uploadDoc(req, res, url);
+    if (req.session.access_token) {
+      let serverUpload = await vkController.getUploadServerUrl(req.session.access_token);
+      await vkController.uploadDoc(req, res, serverUpload.url);
+    } else {
+      res.json({status: 0, message: 'Вам необходимо авторизироваться'}).status(200);
+    }
   }
 }
-
-//-> Получить код
-//-> Переадресовать обратно на сигн ин
-//-> Получить ацесс токен
-//-> Переадресовать на главную

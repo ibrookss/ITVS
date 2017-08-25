@@ -11,14 +11,11 @@ module.exports = {
   display: 'popup',
   scope: 'offline,docs',
   response_type: 'code',
-  //Получает code и добавляет в сессию
   getAuthCode(req, res){
-    //Если нет кода, то получаем его
     return new Promise((resolve, reject) => {
       try {
         if (!req.query.code || req.session.code == req.query.code) {
           let url = `https://oauth.vk.com/authorize?client_id=${this.client_id}&display=${this.display}&redirect_uri=${this.redirect_uri}&scope=${this.scope}&response_type=${this.response_type}&v=5.52`;
-          //Если есть в сессии код, нам незачем получать новй
           return res.redirect(url);
         } else {
           req.session.code = req.query.code;
@@ -50,62 +47,67 @@ module.exports = {
     });
   },
   //Возвращает ссылку для загрузочного сервера
-  getUploadServerUrl(req, res) {
+  getUploadServerUrl(access_token) {
     return new Promise((resolve, reject) => {
       try {
-        let url = `https://api.vk.com/method/docs.getUploadServer?access_token=${req.session.access_token}&v=5.68`;
+        let url = `https://api.vk.com/method/docs.getUploadServer?access_token=${access_token}&v=5.68`;
         let responseBody;
         request(url, (error, response, body) => {
           responseBody = JSON.parse(body);
-          console.log(responseBody.response.upload_url)
-          resolve(responseBody.response.upload_url);
+          resolve({status: 1, url: responseBody.response.upload_url});
         });
       } catch (err) {
-        reject(err);
+        reject({status: 0, message: err});
       }
     });
   },
   saveDoc(access_token, file, name, sizes) {
     return new Promise ((resolve, reject) => {
       try {
+        //Перезаписываем конец строки в base64
         let newFile = file.replace('W10=', Base64.encode('{"graffiti":{"width": '+sizes.width+', "height": '+sizes.height+'}}'));
+        //Сохраняем через VK API с новым файлом, т.к меняли вручную вылетит ошибка
         let url = `https://api.vk.com/method/docs.save?file=${newFile}&title=${name}&access_token=${access_token}&v=5.68`;
         request(url, (error, response, body) => {
+          //Ишнорируем ошибку и делаем еще одно сохранение но со старым файлом
           let url = `https://api.vk.com/method/docs.save?file=${file}&title=${name}&access_token=${access_token}&v=5.68`;
           request(url, (error, response, body) => {
-            resolve()
+            resolve({status: 1})
           });
         });
-        let responseBody;
-        console.log(newFile);
       } catch (err) {
+        reject({status: 0, message: err})
         console.log(err)
       }
     })
   },
   uploadDoc(req, res, url) {
     return new Promise ((resolve, reject) => {
+      //Объявляем АПИ что бы обратиться к нему далее в коде
       let API = this;
       try {
-      //  let url = await this.getUploadServerUrl();
-      let file = req.files.document;
+        let file = req.files.document;
+        //Сохраняем файл в папку
         file.mv(`./upload/${file.name}`, function(err) {
           if (err) console.log(err);
+          //Получаем высоту и ширину картинки
           sizeOf(`./upload/${file.name}`, function (err, dimensions) {
             console.log(`Отправляю запрос на ${url}`);
+            //Формируем multipart/form-data post запрос
             var formData = {
               file: fs.createReadStream(`./upload/${file.name}`),
             };
-            request.post({url:url, formData: formData}, function optionalCallback(err, httpResponse, body) {
+            request.post({url:url, formData: formData}, async function optionalCallback(err, httpResponse, body) {
               if (err) {
                 return console.error('upload failed:', err);
               }
               let responseBody = JSON.parse(body);
-              API.saveDoc(req.session.access_token, responseBody.file, file.name, {width: dimensions.width, height:dimensions.height})
-              res.sendStatus(200);
+              //Вызываем метод сохранения документа
+              let apiRequest = await API.saveDoc(req.session.access_token, responseBody.file, file.name, {width: dimensions.width, height:dimensions.height})
+              apiRequest.status == 1
+                ? res.json({status: 1, message: 'Ваш новый стикер уже в документах (:'}).status(200)
+                : res.json({status: 0, message: 'Ошибка при загрузке на хост'}).status(500);
             });
-            // Advanced use-case, for normal use see 'formData' usage above
-
           });
         });
       } catch (err) {
