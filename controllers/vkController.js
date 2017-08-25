@@ -2,7 +2,6 @@ const request = require('request');
 const sizeOf = require('image-size');
 const Base64 = require('js-base64').Base64;
 const fs = require('fs');
-const restler = require('restler');
 module.exports = {
   client_id: 6161379,
   secret_key: 'gXN7nljHZjWjK37erkL0',

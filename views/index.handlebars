@@ -1,9 +1,55 @@
 Код: <b>{{code}}</b> <br>
 Access Token: <b>{{access_token}}</b> <br>
 User id: <b>{{user_id}}</b> <br>
-
+<div class="fileloader" id="fileloader">
+  Переместите сюда файлы
+</div>
 <form method="post" action="/upload" enctype="multipart/form-data">
   <input type="file" name="document" />
   <input type="submit" value="Поехали" />
 </form>
-<a href="/signin">Авторизироваться</a>
+<script>
+
+  fileloader.innerHTML += '- Блок инициализирован';
+  function fileloader(block, url) {
+    this.block = document.getElementById(block);
+    this.url = url;
+    this.init = () => {
+      //console.log(this);
+      console.log('Инит')
+      this.block.addEventListener('dragenter', this.dropZoneEnter);
+      this.block.addEventListener('dragover', this.dropZoneOver);
+      this.block.addEventListener('dragleave', this.dropZoneLeave);
+
+      this.block.addEventListener('drop', (e) => {
+        console.log(this)
+        this.dropZoneDrop(e);
+      });
+    }
+    this.dropZoneEnter = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      console.log('В зоне')
+    }
+    this.dropZoneOver = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      console.log('Не в зоне')
+    }
+    this.dropZoneLeave = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      console.log('Дезертир')
+    }
+    this.dropZoneDrop = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      this.file = e.dataTransfer.files[0];
+      console.log('Дроп');
+      return false;
+    }
+  }
+  let fl = new fileloader('fileloader', '/');
+  fl.init();
+</script>
+<a href="/signin"><input type="button" value="Авторизироваться"></a>
