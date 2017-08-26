@@ -2,6 +2,7 @@ function FileConstructor(content, id) {
   this.id = id;
   this.content = content;
   this.addBlock = function (id) {
+    //Изменить на append child
     fl.stackBlock.innerHTML += `
       <tr id="file-${id}">
         <td>
@@ -12,6 +13,7 @@ function FileConstructor(content, id) {
         <td><button onclick="fl.stack[${this.id}].cancel()">Отменить</button></td>
       </tr>`;
   }
+  //Добавить обработку ответов сервера
   this.upload = (url, method) => {
     if (fl.stack[this.id]) {
       let file = this.content;
@@ -31,6 +33,7 @@ function FileConstructor(content, id) {
       document.querySelector(`#file-${this.id}`).style.display = 'none';
   }
   this.stateChange = (event) => {
+    //Будь добр обработай все стадии
     if (event.target.readyState == 4) {
       if (event.target.status == 200) {
           document.querySelector(`#file-${this.id}`).children[0].innerHTML = 'Загрузка успешно завершена!';
@@ -41,6 +44,7 @@ function FileConstructor(content, id) {
       }
     }
   }
+  //Это что за **** ?
   this.uploadProgress = (event) => {
     if (fl.stack[this.id]) {
       let percent = parseInt(event.loaded / event.total * 100);
@@ -57,31 +61,25 @@ function fileloader(block, url, stackBlock) {
   this.stack = [];
   this.lastId = 0;
   this.init = () => {
-    //console.log(this);
-    console.log('Инит')
     this.block.addEventListener('dragenter', this.dropZoneEnter);
     this.block.addEventListener('dragover', this.dropZoneOver);
     this.block.addEventListener('dragleave', this.dropZoneLeave);
 
     this.block.addEventListener('drop', (e) => {
-      console.log(this)
       this.dropZoneDrop(e);
     });
   }
   this.dropZoneEnter = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log('В зоне')
   }
   this.dropZoneOver = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log('Не в зоне')
   }
   this.dropZoneLeave = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log('Дезертир')
   }
   this.dropZoneDrop = (e) => {
     e.stopPropagation();
@@ -89,11 +87,8 @@ function fileloader(block, url, stackBlock) {
     this.files = e.dataTransfer.files;
     for (let i = 0; i < this.files.length; i++) {
       let file = this.files[i];
-      console.log(file);
       this.addToStack(i)
     }
-    console.log(e.dataTransfer.files);
-    console.log('Дроп');
     return false;
   }
   this.addToStack = (fileId) => {

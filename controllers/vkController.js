@@ -2,19 +2,13 @@ const request = require('request');
 const sizeOf = require('image-size');
 const Base64 = require('js-base64').Base64;
 const fs = require('fs');
+const config = require('../config.js');
 module.exports = {
-  client_id: 6161379,
-  secret_key: 'gXN7nljHZjWjK37erkL0',
-  redirect_uri: 'http://localhost:8080/signin',
-  index_uri: 'http://localhost:8080/',
-  display: 'popup',
-  scope: 'offline,docs',
-  response_type: 'code',
   getAuthCode(req, res){
     return new Promise((resolve, reject) => {
       try {
         if (!req.query.code || req.session.code == req.query.code) {
-          let url = `https://oauth.vk.com/authorize?client_id=${this.client_id}&display=${this.display}&redirect_uri=${this.redirect_uri}&scope=${this.scope}&response_type=${this.response_type}&v=5.52`;
+          let url = `https://oauth.vk.com/authorize?client_id=${config.client_id}&display=${config.display}&redirect_uri=${config.redirect_uri}&scope=${config.scope}&response_type=${config.response_type}&v=5.52`;
           return res.redirect(url);
         } else {
           req.session.code = req.query.code;
@@ -30,7 +24,7 @@ module.exports = {
   getAcessToken(req, res) {
     return new Promise((resolve, reject) => {
       try {
-        let url = `https://oauth.vk.com/access_token?client_id=${this.client_id}&client_secret=${this.secret_key}&redirect_uri=${this.redirect_uri}&code=${req.session.code}`;
+        let url = `https://oauth.vk.com/access_token?client_id=${config.client_id}&client_secret=${config.secret_key}&redirect_uri=${config.redirect_uri}&code=${req.session.code}`;
         let responseBody;
         request(url, (error, response, body) => {
           responseBody = JSON.parse(body);
@@ -38,7 +32,7 @@ module.exports = {
           req.session.user_id = responseBody.user_id;
           console.log('Токен получен')
           resolve();
-          res.redirect(this.index_uri);
+          res.redirect(config.index_uri);
         });
       } catch (err) {
         reject(err);
