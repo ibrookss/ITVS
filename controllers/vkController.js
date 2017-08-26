@@ -106,7 +106,7 @@ module.exports = {
                 //Проверяем mimetypes
                 if (file.mimetype == 'image/gif' ||
                     file.mimetype == 'image/png' ||
-                    file.mimetype == 'image/jpg') {
+                    file.mimetype == 'image/jpeg') {
                     //Сохраняем файл в папку
                     file.mv(`./upload/${file.name}`, function(err) {
                         if (err) console.log(err);

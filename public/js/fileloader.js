@@ -18,14 +18,20 @@ function FileConstructor(content, id) {
         if (fl.stack[this.id]) {
             let file = this.content;
             console.log(file)
-            let xhr = new XMLHttpRequest();
-            let form = new FormData();
-            form.append("document", file);
-            xhr.upload.addEventListener('progress', this.uploadProgress, false);
-            xhr.onreadystatechange = this.stateChange;
-            xhr.open('POST', url);
-            xhr.setRequestHeader('X-FILE-NAME', file.name);
-            xhr.send(form);
+            if (file.type == 'image/gif' ||
+                file.type == 'image/png' ||
+                file.type == 'image/jpeg') {
+                let xhr = new XMLHttpRequest();
+                let form = new FormData();
+                form.append("document", file);
+                xhr.upload.addEventListener('progress', this.uploadProgress, false);
+                xhr.onreadystatechange = this.stateChange;
+                xhr.open('POST', url);
+                xhr.setRequestHeader('X-FILE-NAME', file.name);
+                xhr.send(form);
+            } else {
+                customAlerts.create(0, 'ты шо ебанутый? Сказал же что расширение кривое');
+            }
         }
     }
     this.cancel = () => {
@@ -88,7 +94,15 @@ function fileloader(block, url, stackBlock) {
         this.files = e.dataTransfer.files;
         for (let i = 0; i < this.files.length; i++) {
             let file = this.files[i];
-            this.addToStack(i)
+            console.log(file)
+            if (file.type == 'image/gif' ||
+                file.type == 'image/png' ||
+                file.type == 'image/jpeg') {
+                this.addToStack(i)
+
+            }else{
+                customAlerts.create(0, `Файл ${file.name} имеет странное расширение`);
+            }
         }
         return false;
     }
