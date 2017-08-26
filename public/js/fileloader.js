@@ -36,10 +36,11 @@ function FileConstructor(content, id) {
         //Будь добр обработай все стадии
         if (event.target.readyState == 4) {
             if (event.target.status == 200) {
-                    document.querySelector(`#file-${this.id}`).children[0].innerHTML = 'Загрузка успешно завершена!';
+                    console.log(event.currentTarget.response)
+                    document.querySelector(`#file-${this.id}`).children[0].innerHTML = event.currentTarget.response;
                     document.querySelector(`#file-${this.id}`).children[2].innerHTML = '';
             } else {
-                    document.querySelector(`#file-${this.id}`).children[0].innerHTML = 'Нихуя';
+                    document.querySelector(`#file-${this.id}`).children[0].innerHTML = event.currentTarget.response;
                     document.querySelector(`#file-${this.id}`).children[1].innerHTML = '';
             }
         }

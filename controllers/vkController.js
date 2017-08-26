@@ -8,7 +8,20 @@ module.exports = {
         return new Promise((resolve, reject) => {
             try {
                 if (!req.query.code || req.session.code == req.query.code) {
-                    let url = `https://oauth.vk.com/authorize?client_id=${config.client_id}&display=${config.display}&redirect_uri=${config.redirect_uri}&scope=${config.scope}&response_type=${config.response_type}&v=5.52`;
+                    let url =
+                    'https://oauth.vk.com/authorize?'
+                    +'client_id='
+                    +config.client_id
+                    +'&display='
+                    +config.display
+                    +'&redirect_uri='
+                    +config.redirect_uri
+                    +'&scope='
+                    +config.scope
+                    +'&response_type='
+                    +config.response_type
+                    '&v=5.52';
+
                     return res.redirect(url);
                 } else {
                     req.session.code = req.query.code;
@@ -24,7 +37,17 @@ module.exports = {
     getAcessToken(req, res) {
         return new Promise((resolve, reject) => {
             try {
-                let url = `https://oauth.vk.com/access_token?client_id=${config.client_id}&client_secret=${config.secret_key}&redirect_uri=${config.redirect_uri}&code=${req.session.code}`;
+                let url =
+                'https://oauth.vk.com/access_token?'
+                +'client_id='
+                +config.client_id
+                +'&client_secret='
+                +config.secret_key
+                +'&redirect_uri='
+                +config.redirect_uri
+                +'&code='
+                +req.session.code;
+
                 let responseBody;
                 request(url, (error, response, body) => {
                     responseBody = JSON.parse(body);
@@ -80,29 +103,42 @@ module.exports = {
             let API = this;
             try {
                 let file = req.files.document;
-                //Сохраняем файл в папку
-                file.mv(`./upload/${file.name}`, function(err) {
-                    if (err) console.log(err);
-                    //Получаем высоту и ширину картинки
-                    sizeOf(`./upload/${file.name}`, function (err, dimensions) {
-                        console.log(`Отправляю запрос на ${url}`);
-                        //Формируем multipart/form-data post запрос
-                        var formData = {
-                            file: fs.createReadStream(`./upload/${file.name}`),
-                        };
-                        request.post({url:url, formData: formData}, async function optionalCallback(err, httpResponse, body) {
-                            if (err) {
-                                return console.error('upload failed:', err);
-                            }
-                            let responseBody = JSON.parse(body);
-                            //Вызываем метод сохранения документа
-                            let apiRequest = await API.saveDoc(req.session.access_token, responseBody.file, file.name, {width: dimensions.width, height:dimensions.height})
-                            apiRequest.status == 1
-                                ? res.json({status: 1, message: 'Ваш новый стикер уже в документах (:'}).status(200)
-                                : res.json({status: 0, message: 'Ошибка при загрузке на хост'}).status(500);
+                //Проверяем mimetypes
+                if (file.mimetype == 'image/gif' ||
+                    file.mimetype == 'image/png' ||
+                    file.mimetype == 'image/jpg') {
+                    //Сохраняем файл в папку
+                    file.mv(`./upload/${file.name}`, function(err) {
+                        if (err) console.log(err);
+                        //Получаем высоту и ширину картинки
+                        sizeOf(`./upload/${file.name}`, function (err, dimensions) {
+                            console.log(`Отправляю запрос на ${url}`);
+                            //Формируем multipart/form-data post запрос
+                            let formData = {
+                                file: fs.createReadStream(`./upload/${file.name}`),
+                            };
+                            request.post({url:url, formData: formData}, async function optionalCallback(err, httpResponse, body) {
+                                if (err) {
+                                    return console.error('upload failed:', err);
+                                }
+                                let responseBody = JSON.parse(body);
+                                //Вызываем метод сохранения документа
+                                let apiRequest = await API.saveDoc(req.session.access_token,
+                                                                   responseBody.file,
+                                                                   file.name,
+                                                                   {
+                                                                       width: dimensions.width,
+                                                                       height:dimensions.height
+                                                                   });
+                                apiRequest.status == 1
+                                    ? res.json({status: 1, message: 'Ваш новый стикер уже в документах (:'}).status(200)
+                                    : res.json({status: 0, message: 'Ошибка при загрузке на хост'}).status(500);
+                            });
                         });
                     });
-                });
+                } else {
+                    res.json({status: 0, message: 'Формат какой то левый'}).status(500);
+                }
             } catch (err) {
                 console.log(err);
             }
