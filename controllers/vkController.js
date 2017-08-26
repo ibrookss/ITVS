@@ -88,6 +88,9 @@ module.exports = {
                     //Ишнорируем ошибку и делаем еще одно сохранение но со старым файлом
                     let url = `https://api.vk.com/method/docs.save?file=${file}&title=${name}&access_token=${access_token}&v=5.68`;
                     request(url, (error, response, body) => {
+                        //Сделать капчу
+                        responseBody = JSON.parse(body);
+                        console.log(responseBody);
                         resolve({status: 1})
                     });
                 });

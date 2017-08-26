@@ -118,7 +118,8 @@ function fileloader(block, url, stackBlock) {
     this.dropZoneEnter = (e) => {
         e.stopPropagation();
         e.preventDefault();
-        console.log(123)
+        this.block.style.border = "2px dashed #00ff17";
+        this.block.innerHTML = "Бросайте :)"
     }
     this.dropZoneOver = (e) => {
         e.stopPropagation();
@@ -127,12 +128,15 @@ function fileloader(block, url, stackBlock) {
     this.dropZoneLeave = (e) => {
         e.stopPropagation();
         e.preventDefault();
+        this.block.innerHTML = "Перетащите сюда файлы"
+        this.block.style.border = "2px dashed #eee"
     }
     this.dropZoneDrop = (e) => {
         e.stopPropagation();
         e.preventDefault();
         this.files = e.dataTransfer.files;
-
+        this.block.innerHTML = "Перетащите сюда файлы"
+        this.block.style.border = "2px dashed #eee"
         for (let i = 0; i < this.files.length; i++) {
             let file = this.files[i];
             console.log(file)
