@@ -1,4 +1,4 @@
-<a href="/signin"><input type="button" value="Авторизироваться"></a> <br>
+<!-- <a href="/signin"><input type="button" value="Авторизироваться"></a> <br>
 Код: <b>{{code}}</b> <br>
 Access Token: <b>{{access_token}}</b> <br>
 User id: <b>{{user_id}}</b> <br>
@@ -14,4 +14,114 @@ User id: <b>{{user_id}}</b> <br>
 </div>
 <table class="fileStack" id="fileStack">
 
-</table>
+</table> -->
+
+<div class="content container">
+	<div class="row">
+		<div class="col-md-6 center">
+			<section class="widget">
+				<div class="body">
+					<!-- //<form id="fileupload" action="/upload" method="POST" enctype="multipart/form-data"> -->
+						<div class="row">
+							<div class="col-md-12">
+								<div id="fileloader" class="dropzone">Перетащите сюда файлы</div>
+							</div>
+						</div>
+						<!-- <div class="row">
+							<div class="col-md-12 fileupload-progress fade in">
+								<div class="progress progress-xs active" role="progressbar">
+									<div class="progress-bar progress-bar-inverse" id="globalPercent" style="width: 0%;"></div>
+								</div>
+								<div class="progress-extended">493.07 kbit/s | 00:00:01 | 92.50 % | 1.05 MB / 1.14 MB</div>
+							</div>
+						</div> -->
+						<div class="form-actions fileupload-buttonbar no-margin">
+							<span class="btn btn-default fileinput-button mr-xs">
+								<i class="fa fa-plus"></i>
+								<span> Добавить</span>
+								<input type="file" name="files[]" multiple="">
+							</span>
+							<button type="submit" onclick = "fl.startAll()" class="btn btn-primary start mr-xs">
+								<i class="fa fa-upload"></i>
+								<span> Старт</span>
+							</button>
+							<button type="reset" class="btn btn-inverse cancel" onclick = "fl.cancelAll()">
+								<i class="fa fa-ban"></i>
+								<span> Отмена</span>
+							</button>
+						</div>
+						<table role="presentation" class="table table-striped">
+							<tbody id="fileStack" class="files">
+								<!-- <tr class="template-upload fade in">
+									<td>
+										<span class="preview"><canvas width="50" height="50"></canvas></span>
+									</td>
+									<td>
+										<p class="name">Debug2.png</p>
+										<strong class="error text-danger"></strong>
+									</td>
+									<td>
+										<p class="size">298.32 KB</p>
+										<div class="progress progress-xs active" role="progressbar">
+											<div class="progress-bar progress-bar-success" style="width:60%;"></div>
+										</div>
+									</td>
+									<td>
+										<button class="btn btn-primary btn-sm start">
+											<i class="fa fa-upload"></i>
+											<span> Старт</span>
+										</button>
+										<button class="btn btn-warning btn-sm cancel">
+											<i class="fa fa-ban"></i>
+											<span> Отмена</span>
+										</button>
+									</td>
+								</tr> -->
+								<!-- <tr class="template-upload fade in">
+									<td>
+										<span class="preview"><canvas width="50" height="50"></canvas></span>
+									</td>
+									<td>
+										<p class="name">Debug2.png</p>
+										<strong class="error text-danger"></strong>
+									</td>
+									<td>
+										<p class="size">298.32 KB</p>
+									</td>
+									<td>
+										<button class="btn btn-danger btn-sm delete">
+											<i class="fa fa-trash"></i>
+											<span>Delete</span>
+										</button>
+									</td>
+								</tr>
+								<tr class="template-upload fade in">
+									<td width="12%">
+										<span class="preview"><canvas width="50" height="50"></canvas></span>
+									</td>
+									<td width="20%">
+										<p class="name">mysql_connect.lnk</p>
+										<div>
+											<span class="label label-danger">Error</span>
+											Filetype not allowed
+
+										</div>
+									</td>
+									<td width="34%">
+										<p class="size">1.24 KB</p>
+									</td>
+									<td width="34%">
+										<button class="btn btn-warning btn-sm cancel">
+											<i class="fa fa-ban"></i>
+											<span> Отмена</span>
+										</button>
+									</td>
+								</tr> -->
+							</tbody>
+						</table>
+					<!-- //</form> -->
+				</div>
+			</section>
+		</div>
+	</div>
+</div>

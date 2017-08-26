@@ -16,13 +16,23 @@ function customAlert(block) {
             ? this.count++
             : this.count = 1;
         //Рендерим новую нотификацию
-        let alertClass = status == 1 ? 'alertSuccess' : 'alertWarning'
+        let alertClass = status == 1 ? 'success success message-success alert-success' : 'alert error message-error alert-error'
         document.getElementById(this.block).innerHTML +=
         `
-            <div class="alert ${alertClass}" id="alert-${this.count}" onclick="customAlerts.remove(${this.count})">
-                <div>${message}</div>
-                <div id="alertLifeTime"></div>
-            </div>
+            <li class="messenger-message-slot messenger-shown messenger-first messenger-last" id="alert-${this.count}">
+                <div class="messenger-message message ${alertClass} messenger-will-hide-after">
+                    <button type="button" class="messenger-close" onclick="customAlerts.remove(${this.count})">×</button>
+                    <div class="messenger-message-inner">${message}</div>
+                    <div class="messenger-spinner">
+                        <span class="messenger-spinner-side messenger-spinner-side-left">
+                            <span class="messenger-spinner-fill"></span>
+                        </span>
+                        <span class="messenger-spinner-side messenger-spinner-side-right">
+                            <span class="messenger-spinner-fill"></span>
+                        </span>
+                    </div>
+                </div>
+            </li>
         `
         //Добавляем новую нотификацию в массив
         this.alerts[this.count] = {
