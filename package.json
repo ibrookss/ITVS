@@ -1,22 +1,22 @@
 {
-  "name": "itvs",
-  "version": "1.0.0",
-  "description": "IMG to Vk Sticker",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "ibrooks & mysql_connect",
-  "license": "ISC",
-  "dependencies": {
-    "body-parser": "^1.17.2",
-    "express": "^4.15.4",
-    "express-fileupload": "^0.1.4",
-    "express-handlebars": "^3.0.0",
-    "express-session": "^1.15.5",
-    "form-data": "^2.3.1",
-    "image-size": "^0.6.1",
-    "js-base64": "^2.1.9",
-    "request": "^2.81.0"
-  }
+    "name": "itvs",
+    "version": "1.0.0",
+    "description": "IMG to Vk Sticker",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "ibrooks & mysql_connect",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.17.2",
+        "express": "^4.15.4",
+        "express-fileupload": "^0.1.4",
+        "express-handlebars": "^3.0.0",
+        "express-session": "^1.15.5",
+        "form-data": "^2.3.1",
+        "image-size": "^0.6.1",
+        "js-base64": "^2.1.9",
+        "request": "^2.81.0"
+    }
 }
