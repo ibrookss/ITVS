@@ -76,12 +76,21 @@ function FileConstructor(content, id) {
             document.querySelector(`#file-${this.id}`).style.display = 'none';
         }, time)
     }
+    this.update = () => {
+        document.querySelector(`#file-start-button-${this.id}`).style.display = "inline";
+        document.querySelector(`#file-progress-${this.id}`).style.width = '0%';
+    }
     this.stateChange = (event) => {
         //Будь добр обработай все стадии
         if (event.target.readyState == 4) {
             if (event.target.status == 200) {
                     let response = JSON.parse(event.currentTarget.response);
                     customAlerts.create(response.status, response.message)
+                    if (response.status == 1) {
+                        this.cancel(1000);
+                    } else{
+                        this.update();
+                    }
             } else {
                     customAlerts.create(0, 'Произошла ошибка')
             }
@@ -95,7 +104,6 @@ function FileConstructor(content, id) {
             document.querySelector(`#file-progress-${this.id}`).style.width = percent+'%';
             if (percent == 100) {
                 customAlerts.create(1, 'Ваше изображение загружено и обрабатывается серверами Вконтакте');
-                this.cancel(1000);
             }
         }
     }

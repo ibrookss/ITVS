@@ -43,10 +43,25 @@ function customAlert(block) {
         //Через секунду запускаем удаление
         setTimeout(this.remove, this.lifeTime*1000, this.count);
     }
+    this.createCaptcha = function (imgUrl) {
+        document.getElementById(this.block).innerHTML +=
+        `
+            <li class="messenger-message-slot messenger-shown messenger-first messenger-last" id="alert-${this.count}">
+                <div class="messenger-message message ${alertClass} messenger-will-hide-after">
+                    <button type="button" class="messenger-close" onclick="customAlerts.remove(${this.count})">×</button>
+                    <div class="messenger-message-inner">${message}</div>
+                    <div class="messenger-spinner">
+                        <span class="messenger-spinner-side messenger-spinner-side-left">
+                            <span class="messenger-spinner-fill"></span>
+                        </span>
+                        <span class="messenger-spinner-side messenger-spinner-side-right">
+                            <span class="messenger-spinner-fill"></span>
+                        </span>
+                    </div>
+                </div>
+            </li>
+        `
+    }
 }
 
 let customAlerts = new customAlert('alerts');
-
-document.getElementById(`fileloader`).addEventListener('click', () => {
-    customAlerts.create(1, 123);
-})

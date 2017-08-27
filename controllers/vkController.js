@@ -70,7 +70,9 @@ module.exports = {
                 let responseBody;
                 request(url, (error, response, body) => {
                     responseBody = JSON.parse(body);
-                    resolve({status: 1, url: responseBody.response.upload_url});
+                    if (responseBody.response && responseBody.response.upload_url) {
+                        resolve({status: 1, url: responseBody.response.upload_url});
+                    }
                 });
             } catch (err) {
                 reject({status: 0, message: err});
@@ -78,25 +80,31 @@ module.exports = {
         });
     },
     saveDoc(access_token, file, name, sizes) {
-        return new Promise ((resolve, reject) => {
+        return new Promise (async (resolve, reject) => {
             try {
                 //Перезаписываем конец строки в base64
                 let newFile = file.replace('W10=', Base64.encode('{"graffiti":{"width": '+sizes.width+', "height": '+sizes.height+'}}'));
                 //Сохраняем через VK API с новым файлом, т.к меняли вручную вылетит ошибка
                 let url = `https://api.vk.com/method/docs.save?file=${newFile}&title=${name}&access_token=${access_token}&v=5.68`;
-                request(url, (error, response, body) => {
-                    //Ишнорируем ошибку и делаем еще одно сохранение но со старым файлом
-                    let url = `https://api.vk.com/method/docs.save?file=${file}&title=${name}&access_token=${access_token}&v=5.68`;
-                    request(url, (error, response, body) => {
-                        //Сделать капчу
-                        responseBody = JSON.parse(body);
-                        console.log(responseBody);
-                        resolve({status: 1})
-                    });
+                await request(url, (error, response, body) => {
+                    console.log('Первая попытка загрузки - неудача');
+                });
+                url = `https://api.vk.com/method/docs.save?file=${file}&title=${name}&access_token=${access_token}&v=5.68`;
+                await request(url, (error, response, body) => {
+                    //Сделать капчу
+                    responseBody = JSON.parse(body);
+                    if (responseBody.error.error_code == 6) {
+                        resolve({status: 0, message: 'Слишком много запросов'});
+                    }
+                    if (responseBody.error.error_code == 14) {
+                        resolve({status: 0, message: 'Капча'});
+                    }
+                    console.log(responseBody);
+                    resolve({status: 1});
                 });
             } catch (err) {
-                reject({status: 0, message: err})
-                console.log(err)
+                reject({status: 0, message: err});
+                console.log(err);
             }
         })
     },
@@ -135,7 +143,7 @@ module.exports = {
                                                                    });
                                 apiRequest.status == 1
                                     ? res.json({status: 1, message: 'Ваш новый стикер уже в документах (:'}).status(200)
-                                    : res.json({status: 0, message: 'Ошибка при загрузке на хост'}).status(500);
+                                    : res.json({status: 0, message: apiRequest.message}).status(500);
                             });
                         });
                     });
