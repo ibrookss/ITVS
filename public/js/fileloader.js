@@ -56,6 +56,9 @@ function FileConstructor(content, id) {
                 let xhr = new XMLHttpRequest();
                 let form = new FormData();
                 form.append("document", file);
+
+                //СЮДА КАПЧУ ПЕРЕДАТЬ
+                form.append("captcha", JSON.stringify(customAlerts.captcha));
                 xhr.upload.addEventListener('progress', this.uploadProgress, false);
                 xhr.onreadystatechange = this.stateChange;
                 xhr.open('POST', url);
@@ -90,6 +93,10 @@ function FileConstructor(content, id) {
                         this.cancel(1000);
                     } else{
                         this.update();
+                        console.log(response)
+                        if (response.error.error_code == 14) {
+                            customAlerts.createCaptcha(response.error.captcha_img, response.error.captcha_sid);
+                        }
                     }
             } else {
                     customAlerts.create(0, 'Произошла ошибка')

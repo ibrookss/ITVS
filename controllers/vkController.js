@@ -79,25 +79,29 @@ module.exports = {
             }
         });
     },
-    saveDoc(access_token, file, name, sizes) {
+    //СЮДА В ПАРАМЕТРЫ КИНУТЬ КАПЧУ И ПРОВЕРЯТЬ, ЕСЛИ ОНА ЕСТЬ ТО ВСТАВИТЬ В ДОКУМЕНТ, ЕСЛИ НЕТ ТО НЕТ
+    saveDoc(access_token, file, name, sizes, captcha) {
         return new Promise (async (resolve, reject) => {
             try {
                 //Перезаписываем конец строки в base64
                 let newFile = file.replace('W10=', Base64.encode('{"graffiti":{"width": '+sizes.width+', "height": '+sizes.height+'}}'));
-                //Сохраняем через VK API с новым файлом, т.к меняли вручную вылетит ошибка
-                let url = `https://api.vk.com/method/docs.save?file=${newFile}&title=${name}&access_token=${access_token}&v=5.68`;
+                //Сохраняем через VK API с новым файлом, т.к меняли вручную вылетит ошибка\
+
+                captcha = JSON.parse(captcha);
+                console.log(captcha);
+                let url = `https://api.vk.com/method/docs.save?file=${newFile}&title=${name}&access_token=${access_token}&v=5.68&captcha_sid=${captcha.captcha_sid}&captcha_key=${captcha.captcha_key}`;
                 await request(url, (error, response, body) => {
                     console.log('Первая попытка загрузки - неудача');
                 });
-                url = `https://api.vk.com/method/docs.save?file=${file}&title=${name}&access_token=${access_token}&v=5.68`;
+                url = `https://api.vk.com/method/docs.save?file=${file}&title=${name}&access_token=${access_token}&v=5.68&captcha_sid=${captcha.captcha_sid}&captcha_key=${captcha.captcha_key}`;
                 await request(url, (error, response, body) => {
                     //Сделать капчу
                     responseBody = JSON.parse(body);
-                    if (responseBody.error.error_code == 6) {
-                        resolve({status: 0, message: 'Слишком много запросов'});
+                    if (responseBody.error && responseBody.error.error_code == 6) {
+                        resolve({status: 0, error: responseBody.error,  message: 'Слишком много запросов'});
                     }
-                    if (responseBody.error.error_code == 14) {
-                        resolve({status: 0, message: 'Капча'});
+                    if (responseBody.error && responseBody.error.error_code == 14) {
+                        resolve({status: 0, error: responseBody.error, message: 'Капча'});
                     }
                     console.log(responseBody);
                     resolve({status: 1});
@@ -109,6 +113,11 @@ module.exports = {
         })
     },
     uploadDoc(req, res, url) {
+        console.log("______________________________________________________");
+        console.log(req.body);
+        console.log(req.query);
+        console.log(req.files);
+        console.log("______________________________________________________");
         return new Promise ((resolve, reject) => {
             //Объявляем АПИ что бы обратиться к нему далее в коде
             let API = this;
@@ -133,6 +142,7 @@ module.exports = {
                                     return console.error('upload failed:', err);
                                 }
                                 let responseBody = JSON.parse(body);
+                                console.log(responseBody)
                                 //Вызываем метод сохранения документа
                                 let apiRequest = await API.saveDoc(req.session.access_token,
                                                                    responseBody.file,
@@ -140,10 +150,11 @@ module.exports = {
                                                                    {
                                                                        width: dimensions.width,
                                                                        height:dimensions.height
-                                                                   });
+                                                                   },
+                                                                   req.body.captcha);
                                 apiRequest.status == 1
                                     ? res.json({status: 1, message: 'Ваш новый стикер уже в документах (:'}).status(200)
-                                    : res.json({status: 0, message: apiRequest.message}).status(500);
+                                    : res.json({status: 0, error: apiRequest.error,  message: apiRequest.message}).status(500);
                             });
                         });
                     });
