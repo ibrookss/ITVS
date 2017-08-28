@@ -4,8 +4,8 @@
 
 ## Credits
 
-#### Design
-mysql_connect, https://github.com/newMySQL
-
 #### Programming
 Roma iBrooks, https://github.com/ibrookss
+
+#### Design
+mysql_connect, https://github.com/newMySQL
